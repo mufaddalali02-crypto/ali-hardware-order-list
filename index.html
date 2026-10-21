@@ -92,6 +92,15 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
 .toolrow{display:flex;gap:8px;margin-top:18px}
 .toolrow button{flex:1;background:var(--bg2);border:1px solid #3d3018;color:var(--mut);border-radius:11px;padding:11px 6px;font-size:12.5px}
 .foot{margin-top:22px;text-align:center;color:var(--dim);font-size:11px;line-height:1.8}
+
+.catsec{margin-top:14px}
+.cathead{display:flex;align-items:center;gap:8px;color:var(--gold2);font-weight:700;font-size:15px;margin:2px 0 8px;font-family:'Baloo 2','Poppins',sans-serif}
+.cathead span{color:var(--dim);font-size:12px;font-weight:500}
+.fchips{display:flex;gap:8px;margin:10px 0 2px}
+.fchips button{flex:1;padding:9px 4px;border-radius:10px;font-size:12.5px;font-weight:600;background:var(--bg2);color:var(--dim);border:1px solid #3d3018}
+.fchips button.on{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.seg.cat button.onc{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.ctag{display:inline-block;font-size:10px;font-weight:700;color:var(--golddim);border:1px solid #453618;border-radius:7px;padding:2px 6px;margin-top:4px}
 .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2c2214;border:1px solid var(--golddim);color:var(--gold2);padding:11px 20px;border-radius:30px;font-size:14px;z-index:60;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
@@ -110,7 +119,6 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
   </div>
 
   <div id="viewOrder" class="view">
-    <button class="sharewa" id="shareBtn" onclick="shareWhatsApp()" style="display:none">📤 List WhatsApp pe bhejo</button>
     <div id="orderList"></div>
   </div>
 
@@ -141,6 +149,14 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
       <label>Saaman ka naam</label>
       <input id="pName" placeholder="jaise: Kitkat Fuse 63A" autocomplete="off">
     </div>
+    <div class="field">
+      <label>Category (maal kis line ka hai)</label>
+      <div class="seg cat">
+        <button id="catE" class="onc" onclick="setCat('Electric')">⚡ Electric</button>
+        <button id="catP" onclick="setCat('Plumbing')">🔩 Plumbing</button>
+        <button id="catC" onclick="setCat('Color')">🎨 Color</button>
+      </div>
+    </div>
     <div class="krow">
       <input type="checkbox" id="pKhatam">
       <span>Ye saaman abhi <b>khatam</b> ho gaya hai (seedha order list me daalo)</span>
@@ -154,7 +170,7 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
 
 <script>
 const $=id=>document.getElementById(id);
-let db=null, products=[], photoData=null;
+let db=null, products=[], photoData=null, curCat='Electric', catFilter='all';
 
 /* ---------- storage (IndexedDB, photos stay on phone) ---------- */
 function openDB(){return new Promise((res,rej)=>{
@@ -197,34 +213,55 @@ function showView(v){view=v;
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtD=ts=>new Date(ts).toLocaleDateString('hi-IN',{day:'numeric',month:'short'})+', '+new Date(ts).toLocaleTimeString('hi-IN',{hour:'numeric',minute:'2-digit'});
 
+function catMeta(c){if(c==='Plumbing')return{icon:'\ud83d\udd27',label:'Plumbing'};if(c==='Color')return{icon:'\ud83c\udfa8',label:'Color'};return{icon:'\u26a1',label:'Electric'};}
+function catOrder(cs){const base=['Electric','Plumbing','Color'];return [...base.filter(c=>cs.includes(c)),...cs.filter(c=>!base.includes(c)).sort()];}
 function render(){
-  const khatam=products.filter(p=>p.khatam).sort((a,b)=>b.khatamAt-a.khatamAt);
-  const all=[...products].sort((a,b)=>b.createdAt-a.createdAt);
+  const khatam=products.filter(p=>p.khatam);
   const cnt=$('orderCnt');
   cnt.style.display=khatam.length?'':'none';cnt.textContent=khatam.length;
-  $('shareBtn').style.display=khatam.length?'':'none';
 
-  $('orderList').innerHTML=khatam.length?('<div class="olist">'+khatam.map(p=>
-    `<div class="orow" id="or${p.id}">
-      <img class="oph" src="${p.photo||'icon-192.png'}" alt="">
-      <div class="oinfo"><div class="oname">${esc(p.name)}</div><div class="odt">Khatam hua: ${fmtD(p.khatamAt)}</div></div>
-      <button class="tick" title="Order ho gaya" onclick="ordered(${p.id})">✓</button>
-    </div>`).join('')+'</div>')
-    :`<div class="empty"><span class="big">✅</span>Order list khaali hai.<br>Jo saaman khatam ho jaye, uspe <b>"Khatam"</b> dabao —<br>wo yahan photo ke saath aa jayega.</div>`;
+  if(khatam.length){
+    const cats=catOrder([...new Set(khatam.map(p=>p.category||'Electric'))]);
+    $('orderList').innerHTML=cats.map(c=>{
+      const m=catMeta(c);const items=khatam.filter(p=>(p.category||'Electric')===c).sort((a,b)=>b.khatamAt-a.khatamAt);
+      return `<div class="catsec">
+        <div class="cathead">${m.icon} ${m.label} <span>${items.length} saaman</span></div>
+        <button class="sharewa" onclick="shareWhatsApp('${c}')">\ud83d\udce4 ${m.label} list WhatsApp pe bhejo</button>
+        <div class="olist">`+items.map(p=>
+        `<div class="orow" id="or${p.id}">
+          <img class="oph" src="${p.photo||'icon-192.png'}" alt="">
+          <div class="oinfo"><div class="oname">${esc(p.name)}</div><div class="odt">Khatam hua: ${fmtD(p.khatamAt)}</div></div>
+          <button class="tick" title="Order ho gaya" onclick="ordered(${p.id})">\u2713</button>
+        </div>`).join('')+`</div></div>`;
+    }).join('');
+  } else {
+    $('orderList').innerHTML=`<div class="empty"><span class="big">\u2705</span>Order list khaali hai.<br>Jo saaman khatam ho jaye, uspe <b>"Khatam"</b> dabao \u2014<br>wo yahan photo ke saath aa jayega.</div>`;
+  }
 
-  $('allList').innerHTML=all.length?('<div class="plist">'+all.map(p=>
-    `<div class="pcard">
+  const all=[...products].sort((a,b)=>b.createdAt-a.createdAt);
+  const shown=catFilter==='all'?all:all.filter(p=>(p.category||'Electric')===catFilter);
+  $('allList').innerHTML=(all.length?`<div class="fchips">
+      <button class="${catFilter==='all'?'on':''}" onclick="setFilter('all')">Sab (${all.length})</button>
+      <button class="${catFilter==='Electric'?'on':''}" onclick="setFilter('Electric')">\u26a1 Electric (${all.filter(p=>(p.category||'Electric')==='Electric').length})</button>
+      <button class="${catFilter==='Plumbing'?'on':''}" onclick="setFilter('Plumbing')">\ud83d\udd27 Plumbing (${all.filter(p=>(p.category||'Electric')==='Plumbing').length})</button>
+      <button class="${catFilter==='Color'?'on':''}" onclick="setFilter('Color')">\ud83c\udfa8 Color (${all.filter(p=>(p.category||'Electric')==='Color').length})</button>
+    </div}`:'')
+    +(shown.length?('<div class="plist">'+shown.map(p=>{const m=catMeta(p.category||'Electric');return `
+    <div class="pcard">
       ${p.khatam?'<span class="tagk">KHATAM</span>':''}
-      <button class="pdel" title="Hatao" onclick="removeProduct(${p.id})">✕</button>
+      <button class="pdel" title="Hatao" onclick="removeProduct(${p.id})">\u2715</button>
       <img src="${p.photo||'icon-192.png'}" alt="" loading="lazy">
-      <div class="pbody"><div class="pname">${esc(p.name)}</div>
+      <div class="pbody"><div class="pname">${esc(p.name)}</div><span class="ctag">${m.icon} ${m.label}</span>
       ${p.khatam
-        ?`<button class="pkht" style="background:linear-gradient(140deg,#17401f,#0e2a14);color:#a9e8bc;border-color:#2a5c33" onclick="backInStock(${p.id})">↩️ Maal aa gaya</button>`
+        ?`<button class="pkht" style="background:linear-gradient(140deg,#17401f,#0e2a14);color:#a9e8bc;border-color:#2a5c33" onclick="backInStock(${p.id})">\u21a9\ufe0f Maal aa gaya</button>`
         :`<button class="pkht" onclick="markKhatam(${p.id})">Khatam</button>`}
       </div>
-    </div>`).join('')+'</div>')
-    :`<div class="empty"><span class="big">📦</span>Abhi koi saaman nahi.<br>Niche <b>"＋ Naya Saaman"</b> dabao,<br>camera se photo kheencho aur naam likho.</div>`;
+    </div>`;}).join('')+'</div>')
+    :(all.length?`<div class="empty"><span class="big">\ud83d\udce6</span>Is category me koi saaman nahi.</div>`
+      :`<div class="empty"><span class="big">\ud83d\udce6</span>Abhi koi saaman nahi.<br>Niche <b>"\uff0b Naya Saaman"</b> dabao,<br>camera se photo kheencho aur naam likho.</div>`));
 }
+function setCat(c){curCat=c;['E','P','C'].forEach(k=>{const m={E:'Electric',P:'Plumbing',C:'Color'};$('cat'+k).classList.toggle('onc',m[k]===c);});}
+function setFilter(f){catFilter=f;render();}
 
 /* ---------- actions ---------- */
 async function markKhatam(id){const p=products.find(x=>x.id===id);if(!p)return;
@@ -247,20 +284,21 @@ async function saveProduct(){
   const name=$('pName').value.trim();
   if(!name){toast('Pehle naam likho');$('pName').focus();return;}
   if(!photoData){toast('Photo kheenchna mat bhoolo 📷');}
-  const p={id:Date.now(),name,photo:photoData,khatam:$('pKhatam').checked,createdAt:Date.now(),khatamAt:$('pKhatam').checked?Date.now():null};
+  const p={id:Date.now(),name,photo:photoData,category:curCat,khatam:$('pKhatam').checked,createdAt:Date.now(),khatamAt:$('pKhatam').checked?Date.now():null};
   products.push(p);await putP(p);closeAdd();render();
   toast(p.khatam?'🛒 Order list me add ho gaya':'📦 Saaman add ho gaya');
   if(p.khatam)showView('order');
 }
 
 /* ---------- WhatsApp share ---------- */
-function shareWhatsApp(){
-  const khatam=products.filter(p=>p.khatam).sort((a,b)=>a.name.localeCompare(b.name));
-  if(!khatam.length)return;
+function shareWhatsApp(cat){
+  const items=products.filter(p=>p.khatam&&(p.category||'Electric')===cat).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!items.length)return;
+  const m=catMeta(cat);
   const d=new Date().toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'});
-  let t='🛒 *Ali Hardware - Order List* ('+d+')\n\n';
-  khatam.forEach((p,i)=>{t+=(i+1)+'. '+p.name+'\n';});
-  t+='\nTotal: '+khatam.length+' saaman order dena hai.';
+  let t=m.icon+' *Ali Hardware - '+m.label+' Order List* ('+d+')\n\n';
+  items.forEach((p,i)=>{t+=(i+1)+'. '+p.name+'\n';});
+  t+='\nTotal: '+items.length+' '+m.label+' saaman order dena hai.';
   window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }
 
@@ -301,6 +339,7 @@ if('serviceWorker' in navigator){
 
 /* ---------- start ---------- */
 (async()=>{try{db=await openDB();products=await loadAll();}catch(_){products=[];}
+  products.forEach(p=>{if(!p.category)p.category='Electric';});
   render();})();
 </script>
 </body>
