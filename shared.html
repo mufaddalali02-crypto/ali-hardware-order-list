@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14100b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Ali Hardware Order List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14100b; --bg2:#1e1810; --card:#241c11; --card2:#2c2214;
+  --gold:#e8c15a; --gold2:#f5d76e; --golddim:#9c7f3c;
+  --txt:#f3ead6; --mut:#c9b48a; --dim:#8d7b58;
+  --red:#ff8a7a; --green:#8fe0a8;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:radial-gradient(1200px 800px at 50% -10%,#2a2012 0%,var(--bg) 55%) fixed;color:var(--txt);font-family:'Poppins',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px}
+button{font-family:inherit;cursor:pointer;border:0}
+input{font-family:inherit;font-size:16px}
+.wrap{max-width:520px;margin:0 auto;padding:0 14px 120px;position:relative}
+.wrap::before{content:'🧾';position:fixed;top:36%;left:50%;transform:translateX(-50%);font-size:300px;opacity:.035;pointer-events:none;z-index:0}
+.wrap>*{position:relative;z-index:1}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(20,16,11,.97),rgba(20,16,11,.88));backdrop-filter:blur(8px);border-bottom:1px solid #3a2e18;padding:14px 0 10px}
+.brand{display:flex;align-items:center;gap:10px}
+.coin{width:46px;height:46px;border-radius:50%;background:#fff;border:1.5px solid var(--golddim);box-shadow:0 2px 10px rgba(232,193,90,.35);flex:none;overflow:hidden}
+.coin img{width:100%;height:100%;object-fit:cover;display:block}
+.brand h1{font-size:19px;font-family:'Baloo 2','Poppins',system-ui,sans-serif;font-weight:800;background:linear-gradient(90deg,var(--gold2),var(--gold),#b98d2f);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.3px}
+.brand small{display:block;color:var(--dim);font-size:11px;font-weight:400;margin-top:1px}
+.view{animation:vin .28s ease}
+@keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tabs{display:flex;gap:8px;margin:14px 0 4px}
+.tabs button{flex:1;padding:12px 6px;border-radius:12px;font-size:14px;font-weight:700;background:var(--bg2);color:var(--dim);border:1px solid #3d3018;position:relative}
+.tabs button.on{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.tabs .cnt{position:absolute;top:-7px;right:-4px;min-width:22px;height:22px;border-radius:11px;background:linear-gradient(140deg,#5a2320,#3a1512);color:#ffb3a8;border:1px solid #7c3630;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.tabs button.on .cnt{background:#241a05;color:var(--gold2);border-color:#241a05}
+.sharewa{width:100%;margin:12px 0 4px;background:linear-gradient(140deg,#1fae54,#128c40);color:#fff;font-weight:700;font-size:15px;border-radius:12px;padding:14px;border:1px solid #2ecc71;box-shadow:0 4px 16px rgba(31,174,84,.25)}
+.sharewa:active{transform:scale(.985)}
+.olist{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.orow{display:flex;align-items:center;gap:12px;background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid #3d3018;border-radius:14px;padding:10px 12px;animation:vin .3s ease}
+.orow.out{animation:out .3s ease forwards}
+@keyframes out{to{opacity:0;transform:translateX(40px)}}
+.oph{width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;border:1px solid #3d3018;background:#120d07}
+.oinfo{flex:1;min-width:0}
+.oname{font-weight:600;font-size:15.5px;line-height:1.35}
+.odt{font-size:11px;color:var(--dim);margin-top:3px}
+.tick{flex:none;width:46px;height:46px;border-radius:50%;background:linear-gradient(140deg,#17401f,#0e2a14);color:#a9e8bc;border:1.5px solid #2a5c33;font-size:20px;font-weight:800}
+.tick:active{transform:scale(.92)}
+.plist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.pcard{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid #3d3018;border-radius:14px;overflow:hidden;animation:vin .3s ease;position:relative}
+.pcard img{width:100%;height:120px;object-fit:cover;display:block;background:#120d07}
+.pbody{padding:9px 10px 10px}
+.pname{font-weight:600;font-size:13.5px;line-height:1.35;min-height:36px}
+.pkht{width:100%;margin-top:8px;background:linear-gradient(140deg,#5a2320,#3a1512);color:#ffb3a8;border:1px solid #7c3630;border-radius:10px;padding:9px 6px;font-size:13px;font-weight:700}
+.pkht:active{transform:scale(.97)}
+.pdel{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:rgba(8,6,3,.72);color:var(--dim);font-size:13px;border:1px solid #453618}
+.tagk{position:absolute;top:6px;left:6px;background:linear-gradient(140deg,#5a2320,#3a1512);color:#ffb3a8;border:1px solid #7c3630;font-size:10px;font-weight:700;border-radius:8px;padding:3px 7px}
+.empty{text-align:center;color:var(--dim);padding:46px 16px;font-size:14px;line-height:1.8}
+.empty .big{font-size:46px;display:block;margin-bottom:10px}
+.fab{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom));z-index:20;background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;font-weight:700;font-size:16px;border-radius:50px;padding:15px 22px;box-shadow:0 6px 22px rgba(232,193,90,.45);overflow:hidden}
+.fab::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 3.2s infinite}
+@keyframes shine{0%{left:-60%}55%{left:130%}100%{left:130%}}
+.modal{position:fixed;inset:0;background:rgba(8,6,3,.78);z-index:40;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:linear-gradient(180deg,#241c10,#191308);border:1px solid #4a3a1c;border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:20px 18px calc(20px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.9,.3,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet h3{color:var(--gold2);font-size:17px;margin-bottom:14px;text-align:center;font-family:'Baloo 2','Poppins',sans-serif}
+.cambtn{width:100%;background:#120d07;border:1.5px dashed var(--golddim);border-radius:14px;padding:16px;color:var(--gold2);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+.cambtn .ci{font-size:24px}
+.prevw{display:none;margin-bottom:12px;text-align:center;position:relative}
+.prevw img{max-width:100%;max-height:220px;border-radius:14px;border:1px solid #4a3a1c}
+.prevw button{position:absolute;top:8px;right:8px;background:rgba(8,6,3,.75);color:#ffb3a8;border:1px solid #7c3630;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--mut);margin-bottom:5px}
+.field input{width:100%;background:#120d07;border:1px solid #453618;border-radius:11px;padding:13px 14px;color:var(--txt);outline:none}
+.field input:focus{border-color:var(--golddim)}
+.krow{display:flex;align-items:center;gap:10px;background:#120d07;border:1px solid #453618;border-radius:11px;padding:12px 14px;margin-bottom:14px}
+.krow input{width:20px;height:20px;accent-color:#c89a2e}
+.krow span{font-size:14px;color:var(--mut)}
+.pri{width:100%;background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;font-weight:700;font-size:16px;border-radius:12px;padding:15px;margin-top:4px}
+.pri:disabled{opacity:.45}
+.ghost{width:100%;background:none;color:var(--dim);padding:12px;margin-top:6px;font-size:14px}
+.install{width:100%;margin:12px 0 0;background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;font-weight:700;font-size:15px;border-radius:12px;padding:13px;position:relative;overflow:hidden;box-shadow:0 4px 16px rgba(232,193,90,.3);display:none}
+.toolrow{display:flex;gap:8px;margin-top:18px}
+.toolrow button{flex:1;background:var(--bg2);border:1px solid #3d3018;color:var(--mut);border-radius:11px;padding:11px 6px;font-size:12.5px}
+.foot{margin-top:22px;text-align:center;color:var(--dim);font-size:11px;line-height:1.8}
+
+.catsec{margin-top:14px}
+.cathead{display:flex;align-items:center;gap:8px;color:var(--gold2);font-weight:700;font-size:15px;margin:2px 0 8px;font-family:'Baloo 2','Poppins',sans-serif}
+.cathead span{color:var(--dim);font-size:12px;font-weight:500}
+.fchips{display:flex;gap:8px;margin:10px 0 2px}
+.fchips button{flex:1;padding:9px 4px;border-radius:10px;font-size:12.5px;font-weight:600;background:var(--bg2);color:var(--dim);border:1px solid #3d3018}
+.fchips button.on{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.seg{display:flex;gap:8px;margin-bottom:14px}
+.seg button{padding:13px;border-radius:12px;font-size:15px;font-weight:700;background:#120d07;color:var(--dim);border:1px solid #453618}
+.seg.cat{flex-wrap:wrap}
+.seg.cat button{flex:1 1 30%;font-size:13px;padding:11px 4px}
+.fchips{flex-wrap:wrap}
+.fchips button{flex:1 1 30%}
+.seg.cat button.onc{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.ctag{display:inline-block;font-size:10px;font-weight:700;color:var(--golddim);border:1px solid #453618;border-radius:7px;padding:2px 6px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2c2214;border:1px solid var(--golddim);color:var(--gold2);padding:11px 20px;border-radius:30px;font-size:14px;z-index:60;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="padding-bottom:0">
+  <div class="brand">
+    <div class="coin"><img src="logo.png" alt="Ali Hardware"></div>
+    <h1>Ali Hardware Order List<small>Jo maal khatam, order dena yaad rahe</small></h1>
+  </div>
+</div></header>
+
+<div class="modal open" id="gateModal" style="align-items:center">
+  <div class="sheet" style="border-radius:22px;border-bottom:1px solid #4a3a1c;max-width:420px">
+    <div class="coin" style="margin:0 auto 12px;width:64px;height:64px"><img src="logo.png" alt="Ali Hardware"></div>
+    <h3>Ali Hardware Order List</h3>
+    <p style="text-align:center;color:var(--mut);font-size:13px;margin-bottom:14px">Ye app sirf dukan staff ke liye hai.<br>Staff code daalo:</p>
+    <div class="field"><input id="staffCode" placeholder="Staff code" autocomplete="off" style="text-align:center;font-size:18px;letter-spacing:2px"></div>
+    <button class="pri" onclick="unlock()">Kholo</button>
+    <div id="gateMsg" style="text-align:center;color:var(--red);font-size:13px;margin-top:8px;min-height:18px"></div>
+  </div>
+</div>
+
+<div class="wrap" style="display:none" id="mainWrap">
+  <div class="tabs">
+    <button id="tabOrder" class="on" onclick="showView('order')">🛒 Order Dena Hai<span class="cnt" id="orderCnt" style="display:none">0</span></button>
+    <button id="tabAll" onclick="showView('all')">📦 Saara Saaman</button>
+  </div>
+
+  <div id="viewOrder" class="view">
+    <div id="orderList"></div>
+  </div>
+
+  <div id="viewAll" class="view" style="display:none">
+    <div id="allList"></div>
+  </div>
+
+  <button class="install" id="installBtn">⬇️ App Install Karo</button>
+
+  <div class="toolrow">
+    <button onclick="backup()">💾 Backup</button>
+    <button onclick="document.getElementById('restoreFile').click()">♻️ Restore</button>
+  </div>
+  <input type="file" id="restoreFile" accept="application/json" style="display:none">
+
+  <div class="foot">Ali Hardware &amp; Electricals, Dharni<br>Photos aur list sirf is phone me save hoti hai.<br>Backup kabhi-kabhi le lete rehna.</div>
+</div>
+
+<button class="fab" onclick="openAdd()">＋ Naya Saaman</button>
+
+<div class="modal" id="addModal">
+  <div class="sheet">
+    <h3>Naya Saaman</h3>
+    <button class="cambtn" id="camBtn" onclick="document.getElementById('camInput').click()"><span class="ci">📷</span><span id="camLbl">Photo Kheencho (Camera)</span></button>
+    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
+    <div class="prevw" id="prevW"><img id="prevImg" alt=""><button onclick="clearPhoto()">✕ Hatao</button></div>
+    <div class="field">
+      <label>Saaman ka naam</label>
+      <input id="pName" placeholder="jaise: Kitkat Fuse 63A" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Category (maal kis line ka hai)</label>
+      <div class="seg cat">
+        <button id="catE" class="onc" onclick="setCat('Electric')">⚡ Electric</button>
+        <button id="catP" onclick="setCat('Plumbing')">🔩 Plumbing</button>
+        <button id="catC" onclick="setCat('Color')">🎨 Color</button>
+        <button id="catH" onclick="setCat('Hardware')">🛠️ Hardware</button>
+        <button id="catR" onclick="setCat('Rassi')">🪢 Rassi</button>
+      </div>
+    </div>
+    <div class="krow">
+      <input type="checkbox" id="pKhatam">
+      <span>Ye saaman abhi <b>khatam</b> ho gaya hai (seedha order list me daalo)</span>
+    </div>
+    <button class="pri" id="saveBtn" onclick="saveProduct()">Add Karo</button>
+    <button class="ghost" onclick="closeAdd()">Rehne do</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const $=id=>document.getElementById(id);
+let products=[], photoData=null, curCat='Electric', catFilter='all';
+
+/* ---------- shared storage (Supabase) ---------- */
+const SUPA_URL='https://tofnqerxdwnaotxicwxj.supabase.co';
+const SUPA_KEY='sb_publishable_eTtiUCR-oPKsvRjv8CNa4w_tQfX9LcG';
+let sb=null;
+
+function toRow(p){return {name:p.name,category:p.category||'Electric',photo:p.photo||null,khatam:!!p.khatam,khatam_at:p.khatamAt?new Date(p.khatamAt).toISOString():null};}
+function fromRow(r){return {id:r.id,name:r.name,category:r.category||'Electric',photo:r.photo,khatam:!!r.khatam,khatamAt:r.khatam_at?Date.parse(r.khatam_at):null,createdAt:Date.parse(r.created_at)||r.id};}
+
+async function loadAll(){
+  const {data,error}=await sb.from('products').select('*').eq('archived',false);
+  if(error)throw error;
+  return (data||[]).map(fromRow);
+}
+async function insertP(p){const {error}=await sb.from('products').insert(toRow(p));if(error)throw error;}
+async function updateP(p){const {error}=await sb.from('products').update(toRow(p)).eq('id',p.id);if(error)throw error;}
+async function archiveP(id){const {error}=await sb.from('products').update({archived:true}).eq('id',id);if(error)throw error;}
+
+async function uploadPhoto(dataUrl){
+  const blob=await (await fetch(dataUrl)).blob();
+  const path=Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.jpg';
+  const {error}=await sb.storage.from('photos').upload(path,blob,{contentType:'image/jpeg'});
+  if(error)throw error;
+  return sb.storage.from('photos').getPublicUrl(path).data.publicUrl;
+}
+
+async function refresh(){products=await loadAll();render();}
+function subscribe(){
+  sb.channel('products-changes').on('postgres_changes',{event:'*',schema:'public',table:'products'},()=>{refresh().catch(()=>{});}).subscribe();
+}
+
+/* ---------- staff gate ---------- */
+async function unlock(){
+  const code=$('staffCode').value.trim();
+  if(!code)return;
+  $('gateMsg').textContent='Check ho raha hai...';
+  try{
+    const {data,error}=await sb.rpc('check_staff_code',{code});
+    if(error)throw error;
+    if(data===true){
+      localStorage.setItem('ah-staff-ok','1');
+      $('gateModal').classList.remove('open');
+      startApp();
+    }else{$('gateMsg').textContent='Galat code. Malik se poochho.';}
+  }catch(e){$('gateMsg').textContent='Network problem - internet check karo.';}
+}
+
+/* ---------- one-time import from this phone (old local data) ---------- */
+function openLocalDB(){return new Promise((res,rej)=>{
+  const r=indexedDB.open('ah-order-list',1);
+  r.onupgradeneeded=e=>{e.target.result.createObjectStore('products',{keyPath:'id'});};
+  r.onsuccess=e=>res(e.target.result); r.onerror=()=>rej(r.error);
+});}
+function localAll(db){return new Promise(res=>{const out=[];const c=db.transaction('products','readonly').objectStore('products').openCursor();
+  c.onsuccess=e=>{const cur=e.target.result;if(cur){out.push(cur.value);cur.continue();}else res(out);};});}
+
+async function checkImport(){
+  if(localStorage.getItem('ah-imported'))return;
+  let local=[];
+  try{const db=await openLocalDB();local=await localAll(db);}catch(_){}
+  local=(local||[]).filter(p=>p&&p.name);
+  if(!local.length){localStorage.setItem('ah-imported','1');return;}
+  const b=document.createElement('div');
+  b.id='importBanner';
+  b.style.cssText='background:linear-gradient(150deg,#33270f,var(--card));border:1px solid var(--golddim);border-radius:14px;padding:14px;margin:12px 0;text-align:center';
+  b.innerHTML=`<div style="font-size:14px;color:var(--txt);margin-bottom:4px">Is phone ka purana data mila: <b style="color:var(--gold2)">${local.length} saaman</b></div>
+  <div style="font-size:12px;color:var(--mut);margin-bottom:10px">Shared list me upload kar dein? (photos bhi jayengi)</div>
+  <div style="display:flex;gap:8px"><button class="pri" style="margin:0;flex:1" onclick="doImport()">Haan, upload karo</button>
+  <button class="ghost" style="margin:0;flex:1;padding:12px" onclick="skipImport()">Nahi, rehne do</button></div>`;
+  $('mainWrap').insertBefore(b,$('mainWrap').children[1]);
+  window._importData=local;
+}
+async function doImport(){
+  const local=window._importData||[];
+  const b=$('importBanner');
+  b.querySelector('div').innerHTML='Upload ho raha hai... <b id="impProg"></b>';
+  b.querySelectorAll('button').forEach(x=>x.style.display='none');
+  let done=0,fail=0;
+  for(const p of local){
+    try{
+      let url=null;
+      if(p.photo&&p.photo.startsWith('data:'))url=await uploadPhoto(p.photo);
+      else if(p.photo)url=p.photo;
+      await insertP({name:p.name,category:p.category||'Electric',photo:url,khatam:!!p.khatam,khatamAt:p.khatamAt||null});
+      done++;
+    }catch(e){fail++;}
+    const pr=$('impProg');if(pr)pr.textContent=done+'/'+(local.length);
+  }
+  localStorage.setItem('ah-imported','1');
+  b.remove();
+  await refresh();
+  toast(fail?(`${done} upload hue, ${fail} nahi hue`):`\u2705 Purana data upload ho gaya (${done})`);
+}
+function skipImport(){localStorage.setItem('ah-imported','1');const b=$('importBanner');if(b)b.remove();}
+
+/* ---------- photo: resize then keep as dataURL ---------- */
+function handlePhoto(file){
+  const img=new Image();
+  img.onload=()=>{
+    const M=900;let w=img.width,h=img.height;
+    if(w>M||h>M){const s=M/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s);}
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    photoData=c.toDataURL('image/jpeg',0.78);
+    $('prevImg').src=photoData;$('prevW').style.display='block';
+    $('camLbl').textContent='Photo badlo (dobara kheencho)';
+    URL.revokeObjectURL(img.src);
+  };
+  img.src=URL.createObjectURL(file);
+}
+function clearPhoto(){photoData=null;$('prevW').style.display='none';$('camInput').value='';$('camLbl').textContent='Photo Kheencho (Camera)';}
+
+/* ---------- views ---------- */
+let view='order';
+function showView(v){view=v;
+  $('viewOrder').style.display=v==='order'?'':'none';
+  $('viewAll').style.display=v==='all'?'':'none';
+  $('tabOrder').classList.toggle('on',v==='order');
+  $('tabAll').classList.toggle('on',v==='all');
+  render();
+}
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtD=ts=>new Date(ts).toLocaleDateString('hi-IN',{day:'numeric',month:'short'})+', '+new Date(ts).toLocaleTimeString('hi-IN',{hour:'numeric',minute:'2-digit'});
+
+const CATS=[['Electric','\u26a1'],['Plumbing','\ud83d\udd27'],['Color','\ud83c\udfa8'],['Hardware','\ud83d\udee0\ufe0f'],['Rassi','\ud83e\udea2']];
+function catMeta(c){const f=CATS.find(x=>x[0]===c);return f?{icon:f[1],label:f[0]}:{icon:'\u26a1',label:'Electric'};}
+function catOrder(cs){const base=CATS.map(x=>x[0]);return [...base.filter(c=>cs.includes(c)),...cs.filter(c=>!base.includes(c)).sort()];}
+function render(){
+  const khatam=products.filter(p=>p.khatam);
+  const cnt=$('orderCnt');
+  cnt.style.display=khatam.length?'':'none';cnt.textContent=khatam.length;
+
+  if(khatam.length){
+    const cats=catOrder([...new Set(khatam.map(p=>p.category||'Electric'))]);
+    $('orderList').innerHTML=cats.map(c=>{
+      const m=catMeta(c);const items=khatam.filter(p=>(p.category||'Electric')===c).sort((a,b)=>b.khatamAt-a.khatamAt);
+      return `<div class="catsec">
+        <div class="cathead">${m.icon} ${m.label} <span>${items.length} saaman</span></div>
+        <button class="sharewa" onclick="shareWhatsApp('${c}')">\ud83d\udce4 ${m.label} list WhatsApp pe bhejo</button>
+        <div class="olist">`+items.map(p=>
+        `<div class="orow" id="or${p.id}">
+          <img class="oph" src="${p.photo||'icon-192.png'}" alt="">
+          <div class="oinfo"><div class="oname">${esc(p.name)}</div><div class="odt">Khatam hua: ${fmtD(p.khatamAt)}</div></div>
+          <button class="tick" title="Order ho gaya" onclick="ordered(${p.id})">\u2713</button>
+        </div>`).join('')+`</div></div>`;
+    }).join('');
+  } else {
+    $('orderList').innerHTML=`<div class="empty"><span class="big">\u2705</span>Order list khaali hai.<br>Jo saaman khatam ho jaye, uspe <b>"Khatam"</b> dabao \u2014<br>wo yahan photo ke saath aa jayega.</div>`;
+  }
+
+  const all=[...products].sort((a,b)=>b.createdAt-a.createdAt);
+  const shown=catFilter==='all'?all:all.filter(p=>(p.category||'Electric')===catFilter);
+  $('allList').innerHTML=(all.length?`<div class="fchips">
+      <button class="${catFilter==='all'?'on':''}" onclick="setFilter('all')">Sab (${all.length})</button>`+CATS.map(cat=>{const n=all.filter(p=>(p.category||'Electric')===cat[0]).length;return n?`<button class="${catFilter===cat[0]?'on':''}" onclick="setFilter('${cat[0]}')">${cat[1]} ${cat[0]} (${n})</button>`:'';}).join('')+`</div>`:'')
+    +(shown.length?('<div class="plist">'+shown.map(p=>{const m=catMeta(p.category||'Electric');return `
+    <div class="pcard">
+      ${p.khatam?'<span class="tagk">KHATAM</span>':''}
+      <button class="pdel" title="Hatao" onclick="removeProduct(${p.id})">\u2715</button>
+      <img src="${p.photo||'icon-192.png'}" alt="" loading="lazy">
+      <div class="pbody"><div class="pname">${esc(p.name)}</div><span class="ctag">${m.icon} ${m.label}</span>
+      ${p.khatam
+        ?`<button class="pkht" style="background:linear-gradient(140deg,#17401f,#0e2a14);color:#a9e8bc;border-color:#2a5c33" onclick="backInStock(${p.id})">\u21a9\ufe0f Maal aa gaya</button>`
+        :`<button class="pkht" onclick="markKhatam(${p.id})">Khatam</button>`}
+      </div>
+    </div>`;}).join('')+'</div>')
+    :(all.length?`<div class="empty"><span class="big">\ud83d\udce6</span>Is category me koi saaman nahi.</div>`
+      :`<div class="empty"><span class="big">\ud83d\udce6</span>Abhi koi saaman nahi.<br>Niche <b>"\uff0b Naya Saaman"</b> dabao,<br>camera se photo kheencho aur naam likho.</div>`));
+}
+function setCat(c){curCat=c;[['E','Electric'],['P','Plumbing'],['C','Color'],['H','Hardware'],['R','Rassi']].forEach(kv=>{$('cat'+kv[0]).classList.toggle('onc',kv[1]===c);});}
+function setFilter(f){catFilter=f;render();}
+
+/* ---------- actions ---------- */
+async function markKhatam(id){const p=products.find(x=>x.id===id);if(!p)return;
+  p.khatam=true;p.khatamAt=Date.now();render();
+  try{await updateP(p);}catch(e){toast('Internet check karo');}
+  toast('🛒 Order list me daal diya');showView('order');}
+async function backInStock(id){const p=products.find(x=>x.id===id);if(!p)return;
+  p.khatam=false;p.khatamAt=null;render();
+  try{await updateP(p);}catch(e){toast('Internet check karo');}
+  toast('📦 Stock me wapas');}
+async function ordered(id){
+  const row=$('or'+id);if(row)row.classList.add('out');
+  const p=products.find(x=>x.id===id);if(!p)return;
+  p.khatam=false;p.khatamAt=null;
+  try{await updateP(p);}catch(e){toast('Internet check karo');}
+  setTimeout(render,280);toast('✅ Order ho gaya, badhiya!');}
+async function removeProduct(id){
+  if(!confirm('Ye saaman poori tarah hata dein?'))return;
+  products=products.filter(x=>x.id!==id);render();
+  try{await archiveP(id);}catch(e){toast('Internet check karo');}
+  toast('Hata diya');}
+
+function openAdd(){clearPhoto();$('pName').value='';$('pKhatam').checked=(view==='order');$('addModal').classList.add('open');}
+function closeAdd(){$('addModal').classList.remove('open');}
+async function saveProduct(){
+  const name=$('pName').value.trim();
+  if(!name){toast('Pehle naam likho');$('pName').focus();return;}
+  if(!photoData){toast('Photo kheenchna mat bhoolo 📷');}
+  const btn=$('saveBtn');btn.disabled=true;btn.textContent='Save ho raha hai...';
+  try{
+    let url=null;
+    if(photoData)url=await uploadPhoto(photoData);
+    await insertP({name,photo:url,category:curCat,khatam:$('pKhatam').checked,khatamAt:$('pKhatam').checked?Date.now():null});
+    closeAdd();await refresh();
+    toast($('pKhatam').checked?'🛒 Order list me add ho gaya':'📦 Saaman add ho gaya');
+  }catch(e){toast('Save nahi hua - internet check karo');}
+  btn.disabled=false;btn.textContent='Add Karo';
+}
+
+/* ---------- WhatsApp share ---------- */
+function shareWhatsApp(cat){
+  const items=products.filter(p=>p.khatam&&(p.category||'Electric')===cat).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!items.length)return;
+  const m=catMeta(cat);
+  const d=new Date().toLocaleDateString('hi-IN',{day:'numeric',month:'long',year:'numeric'});
+  let t=m.icon+' *Ali Hardware - '+m.label+' Order List* ('+d+')\n\n';
+  items.forEach((p,i)=>{t+=(i+1)+'. '+p.name+'\n';});
+  t+='\nTotal: '+items.length+' '+m.label+' saaman order dena hai.';
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+}
+
+/* ---------- backup / restore ---------- */
+async function backup(){
+  try{await refresh();}catch(e){}
+  const blob=new Blob([JSON.stringify({app:'ali-hardware-order-list',when:new Date().toISOString(),products},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='ali-hardware-order-list-backup.json';a.click();toast('💾 Backup download ho gaya');
+}
+$('restoreFile').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=async()=>{try{
+    const d=JSON.parse(r.result);
+    if(!d.products||!Array.isArray(d.products))throw 0;
+    let n=0;
+    for(const p of d.products){if(p&&p.name){await insertP({name:p.name,category:p.category||'Electric',photo:p.photo||null,khatam:!!p.khatam,khatamAt:p.khatamAt||null});n++;}}
+    await refresh();toast('♻️ Restore ho gaya ('+n+')');
+  }catch(_){toast('Backup file sahi nahi hai');}};
+  r.readAsText(f);e.target.value='';
+});
+
+/* ---------- toast ---------- */
+let toastT=null;
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';
+  clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',2200);}
+
+/* ---------- camera input ---------- */
+$('camInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)handlePhoto(f);});
+
+/* ---------- install (PWA) ---------- */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').style.display='block';});
+$('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').style.display='none';});
+window.addEventListener('appinstalled',()=>{$('installBtn').style.display='none';});
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+/* ---------- start ---------- */
+sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+if(localStorage.getItem('ah-staff-ok')==='1'){$('gateModal').classList.remove('open');startApp();}
+async function startApp(){
+  $('mainWrap').style.display='';
+  try{products=await loadAll();}catch(e){products=[];toast('Internet check karo');}
+  products.forEach(p=>{if(!p.category)p.category='Electric';});
+  render();subscribe();checkImport();
+}
+</script>
+</body>
+</html>
