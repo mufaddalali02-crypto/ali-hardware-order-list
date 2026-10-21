@@ -99,6 +99,10 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
 .fchips{display:flex;gap:8px;margin:10px 0 2px}
 .fchips button{flex:1;padding:9px 4px;border-radius:10px;font-size:12.5px;font-weight:600;background:var(--bg2);color:var(--dim);border:1px solid #3d3018}
 .fchips button.on{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
+.seg.cat{flex-wrap:wrap}
+.seg.cat button{flex:1 1 30%;font-size:13px;padding:11px 4px}
+.fchips{flex-wrap:wrap}
+.fchips button{flex:1 1 30%}
 .seg.cat button.onc{background:linear-gradient(140deg,var(--gold2),#c89a2e);color:#241a05;border-color:var(--golddim)}
 .ctag{display:inline-block;font-size:10px;font-weight:700;color:var(--golddim);border:1px solid #453618;border-radius:7px;padding:2px 6px;margin-top:4px}
 .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2c2214;border:1px solid var(--golddim);color:var(--gold2);padding:11px 20px;border-radius:30px;font-size:14px;z-index:60;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
@@ -155,6 +159,8 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(2
         <button id="catE" class="onc" onclick="setCat('Electric')">⚡ Electric</button>
         <button id="catP" onclick="setCat('Plumbing')">🔩 Plumbing</button>
         <button id="catC" onclick="setCat('Color')">🎨 Color</button>
+        <button id="catH" onclick="setCat('Hardware')">🛠️ Hardware</button>
+        <button id="catR" onclick="setCat('Rassi')">🪢 Rassi</button>
       </div>
     </div>
     <div class="krow">
@@ -213,8 +219,9 @@ function showView(v){view=v;
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtD=ts=>new Date(ts).toLocaleDateString('hi-IN',{day:'numeric',month:'short'})+', '+new Date(ts).toLocaleTimeString('hi-IN',{hour:'numeric',minute:'2-digit'});
 
-function catMeta(c){if(c==='Plumbing')return{icon:'\ud83d\udd27',label:'Plumbing'};if(c==='Color')return{icon:'\ud83c\udfa8',label:'Color'};return{icon:'\u26a1',label:'Electric'};}
-function catOrder(cs){const base=['Electric','Plumbing','Color'];return [...base.filter(c=>cs.includes(c)),...cs.filter(c=>!base.includes(c)).sort()];}
+const CATS=[['Electric','\u26a1'],['Plumbing','\ud83d\udd27'],['Color','\ud83c\udfa8'],['Hardware','\ud83d\udee0\ufe0f'],['Rassi','\ud83e\udea2']];
+function catMeta(c){const f=CATS.find(x=>x[0]===c);return f?{icon:f[1],label:f[0]}:{icon:'\u26a1',label:'Electric'};}
+function catOrder(cs){const base=CATS.map(x=>x[0]);return [...base.filter(c=>cs.includes(c)),...cs.filter(c=>!base.includes(c)).sort()];}
 function render(){
   const khatam=products.filter(p=>p.khatam);
   const cnt=$('orderCnt');
@@ -241,11 +248,7 @@ function render(){
   const all=[...products].sort((a,b)=>b.createdAt-a.createdAt);
   const shown=catFilter==='all'?all:all.filter(p=>(p.category||'Electric')===catFilter);
   $('allList').innerHTML=(all.length?`<div class="fchips">
-      <button class="${catFilter==='all'?'on':''}" onclick="setFilter('all')">Sab (${all.length})</button>
-      <button class="${catFilter==='Electric'?'on':''}" onclick="setFilter('Electric')">\u26a1 Electric (${all.filter(p=>(p.category||'Electric')==='Electric').length})</button>
-      <button class="${catFilter==='Plumbing'?'on':''}" onclick="setFilter('Plumbing')">\ud83d\udd27 Plumbing (${all.filter(p=>(p.category||'Electric')==='Plumbing').length})</button>
-      <button class="${catFilter==='Color'?'on':''}" onclick="setFilter('Color')">\ud83c\udfa8 Color (${all.filter(p=>(p.category||'Electric')==='Color').length})</button>
-    </div}`:'')
+      <button class="${catFilter==='all'?'on':''}" onclick="setFilter('all')">Sab (${all.length})</button>`+CATS.map(cat=>{const n=all.filter(p=>(p.category||'Electric')===cat[0]).length;return n?`<button class="${catFilter===cat[0]?'on':''}" onclick="setFilter('${cat[0]}')">${cat[1]} ${cat[0]} (${n})</button>`:'';}).join('')+`</div>`:'')
     +(shown.length?('<div class="plist">'+shown.map(p=>{const m=catMeta(p.category||'Electric');return `
     <div class="pcard">
       ${p.khatam?'<span class="tagk">KHATAM</span>':''}
@@ -260,7 +263,7 @@ function render(){
     :(all.length?`<div class="empty"><span class="big">\ud83d\udce6</span>Is category me koi saaman nahi.</div>`
       :`<div class="empty"><span class="big">\ud83d\udce6</span>Abhi koi saaman nahi.<br>Niche <b>"\uff0b Naya Saaman"</b> dabao,<br>camera se photo kheencho aur naam likho.</div>`));
 }
-function setCat(c){curCat=c;['E','P','C'].forEach(k=>{const m={E:'Electric',P:'Plumbing',C:'Color'};$('cat'+k).classList.toggle('onc',m[k]===c);});}
+function setCat(c){curCat=c;[['E','Electric'],['P','Plumbing'],['C','Color'],['H','Hardware'],['R','Rassi']].forEach(kv=>{$('cat'+kv[0]).classList.toggle('onc',kv[1]===c);});}
 function setFilter(f){catFilter=f;render();}
 
 /* ---------- actions ---------- */
